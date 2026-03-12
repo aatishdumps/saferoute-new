@@ -7,6 +7,7 @@ import { buildGraph } from "@/lib/graphBuilder";
 import { findFastestRoute, findSafestRoute } from "@/lib/routing";
 import { findNearestPoliceStation } from "@/lib/policeDistance";
 import { Shield, Zap, Navigation, MapPin, Crosshair, Trash2, LocateFixed, ArrowUpDown, Play, Square } from "lucide-react";
+import LocationSearch from "./LocationSearch";
 import SOSDialog from "./SOSDialog";
 import { toast } from "sonner";
 
@@ -239,6 +240,19 @@ export default function MapView() {
       {/* Map */}
       <div ref={mapContainerRef} className="absolute inset-0 z-0" />
 
+      {/* Header */}
+      <div className="absolute top-4 left-4 right-4 z-[1000] flex items-center gap-3">
+        <div className="glass-panel rounded-lg px-4 py-2.5 glow-green flex items-center gap-2.5">
+          <Shield className="w-5 h-5 text-primary" />
+          <span className="font-mono text-sm font-bold tracking-wider text-foreground">
+            VADODARA SAFE NAV
+          </span>
+        </div>
+        <div className="glass-panel rounded-lg px-3 py-2.5 text-xs font-mono text-muted-foreground hidden sm:block">
+          {policeStations.length} stations · {roads.length} roads
+        </div>
+      </div>
+
       {/* Control Panel */}
       <div className="absolute bottom-4 left-4 z-[1000] w-80 space-y-2">
         {/* Point Selection */}
@@ -264,6 +278,13 @@ export default function MapView() {
             </button>
           </div>
 
+          <LocationSearch
+            placeholder="Search start location..."
+            onSelect={(lat, lng) => {
+              setStartPoint([lat, lng]);
+              mapRef.current?.setView([lat, lng], 15);
+            }}
+          />
           <div className="flex gap-1.5">
             <button
               onClick={() => setSelectingPoint("start")}
@@ -277,7 +298,7 @@ export default function MapView() {
               <span className="truncate">
                 {startPoint
                   ? `${startPoint[0].toFixed(4)}, ${startPoint[1].toFixed(4)}`
-                  : "Click map to set start"}
+                  : "Or click map"}
               </span>
             </button>
             <button
@@ -294,6 +315,13 @@ export default function MapView() {
             </button>
           </div>
 
+          <LocationSearch
+            placeholder="Search destination..."
+            onSelect={(lat, lng) => {
+              setEndPoint([lat, lng]);
+              mapRef.current?.setView([lat, lng], 15);
+            }}
+          />
           <button
             onClick={() => setSelectingPoint("end")}
             className={`w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm font-mono transition-all
@@ -305,7 +333,7 @@ export default function MapView() {
             <Crosshair className="w-4 h-4 text-destructive" />
             {endPoint
               ? `${endPoint[0].toFixed(4)}, ${endPoint[1].toFixed(4)}`
-              : "Click map to set end"}
+              : "Or click map"}
           </button>
         </div>
 
